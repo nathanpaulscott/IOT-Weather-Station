@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r echo=F, include=F}
+require(knitr)
+require(kableExtra)
+require(png)
+require(grid)
+require(ggplot2)
+require(gridExtra)
+require(rstan)
+require(bayesplot)
+require(lattice)
+require(reshape2)
+require(MASS)
+require(GGally)
+require(forecast)
+```
+
+
+```{r}
+d <- read.csv("D:/A.Nathan/1a.UWA 2018/CITS5506 - IoT/Project/Github/data1.csv", quote="'")
+```
+
+
+```{r fig.width=12}
+names(d)
+d$dt = strptime(d$datetime_str, format = "%d/%m/%y %H:%M:%S", tz="")
+x = d$dt
+```
+
+
+```{r echo=F, fig.width=12}
+y = d$batt_lev
+z = d$light_lev
+with(d, plot(x, y, type="l", col="blue", main="Battery Level and ambient Light Level", xlab="Date", ylab="Voltage"))
+with(d, lines(x, z, type="l", col="red"))
+```
+
+
+
+```{r echo=F, fig.width=12}
+y = d$temp
+z = d$hum
+par(mar=c(5, 4, 4, 6) + 0.1)
+with(d, plot(x, y, type="l", col="blue", main="Temperature and Humidity", xlab="Date", ylab="Deg C", ylim=c(0,60)))
+par(new=T)
+with(d, plot(x, z, type="l", col="red", xlab="", ylab="", axes=F, ylim=c(0,100)))
+axis(side=4)
+mtext("%", side=4, line=4)
+```
+
+```{r fig.width=12}
+z = ma(d$wdir_mean, 8, centre=F)
+y = ma(d$wspd_mean, 8, centre=F)
+par(mar=c(5, 4, 4, 6) + 0.1)
+with(d, plot(x, y, type="l", col="blue", main="Wind Speed and Direction", xlab="Date", ylab="Wind Speed (kmph)", ylim=c(0,40)))
+par(new=T)
+with(d, plot(x, z, type="l", col="red", xlab="", ylab="", axes=F, ylim=c(0,360)))
+axis(side=4)
+mtext("Wind Direction (Deg)", side=4, line=4)
+```
+
