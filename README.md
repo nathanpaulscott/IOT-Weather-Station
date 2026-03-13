@@ -1,152 +1,124 @@
-
-# Data Warehousing Project – ABC Mining
+# IoT Weather Station
 
 ## Overview
-This project demonstrates the design and implementation of a **data warehouse** for a fictional mining company called **ABC Mining**. The company operates multiple iron ore mines in Western Australia and requires improved analytics for operational efficiency, supply chain management, and sales forecasting.
+This project implements a low‑cost Internet of Things (IoT) weather station capable of measuring and publishing environmental data in real time.  
+The system was designed and built as part of a university IoT course project and focuses on collecting wind speed, wind direction, temperature, and humidity data and transmitting it to an online server.
 
-The warehouse integrates operational data sources and models them into dimensional data cubes that support business intelligence and management reporting.
+The device is designed to be:
+- Low cost
+- Battery powered with solar charging
+- Internet connected
+- Deployable in remote locations
 
-## Objectives
-The main goals of the project were:
+## Features
+- Wind speed measurement using an anemometer
+- Wind direction sensing
+- Temperature and humidity sensing
+- Battery voltage monitoring
+- Ambient light monitoring
+- WiFi data transmission to a web server
+- Low‑power operation using sleep cycles
 
-- Design a dimensional data warehouse schema
-- Model key business processes using star schemas
-- Create data cubes for analytical queries
-- Simulate operational data to populate the warehouse
-- Demonstrate how business intelligence queries can support management decisions
+## System Architecture
+The system consists of:
 
-## Business Context
-ABC Mining extracts iron ore from open‑cut mines and transports it via rail to Port Hedland for shipment to international customers.
+**Hardware**
+- ATMega328P microcontroller
+- ESP8266 WiFi module
+- Wind speed sensor (anemometer)
+- Wind direction sensor
+- Temperature and humidity sensor
+- Solar panel
+- LiPo battery
+- Solar charging and power management module
 
-Profit is determined by:
+**Software**
+- Arduino firmware running on the MCU
+- ESP8266 controlled via AT commands
+- Python Flask web server
+- SQLite database for storing measurements
 
-Profit = Revenue – Operational Costs
+The device periodically:
+1. Powers sensors and collects measurements.
+2. Connects to WiFi.
+3. Sends data via HTTP POST to a web server.
+4. Enters a low‑power sleep mode.
 
-The data warehouse focuses on helping management:
+## Hardware Components
+Approximate system components:
 
-- Reduce operational costs
-- Improve supply chain visibility
-- Forecast demand from long‑term supply contracts
-- Analyse production efficiency across mines and equipment
+- ATMega328P MCU
+- ESP8266‑01 WiFi module
+- DHT temperature/humidity sensor
+- Wind speed and direction sensors
+- Solar panel (≈1.5W)
+- LiPo battery (~2000mAh)
+- DC‑DC converter
+- Solar battery charging module
+- Weatherproof enclosure
 
-## Data Warehouse Architecture
+## Firmware
+The microcontroller firmware is written using the Arduino framework.
 
-Operational Systems → ETL / Simulation → Data Warehouse → BI Analysis
+Main tasks performed by the firmware:
+- Sensor data acquisition
+- Wind speed interrupt handling
+- Wind direction sampling
+- Power management
+- WiFi communications using AT commands
+- HTTP POST data transmission
 
-For this project, operational data was **simulated using Python** and loaded directly into the data warehouse schema to simplify development.
+The MCU also uses:
+- Watchdog timer protection
+- Deep sleep cycles for energy efficiency
 
-## Data Cubes
+## Server Side
+Sensor data is transmitted to a web server running a Python Flask application.
 
-### 1. Truck Management Data Cube
-Tracks the performance and cost of mining trucks.
+The server:
+- Receives sensor data via HTTP POST
+- Stores measurements in an SQLite database
+- Allows retrieval and visualization of weather data
 
-**Key Dimensions**
-- Date
-- Time
-- Truck
-- Driver
-- Location (Mine)
-- Mission
+## Power Management
+The system is designed for long‑term outdoor deployment.
 
-**Key Facts**
-- Fuel consumption
-- Distance travelled
-- Ore delivered (tonnes)
-- Parts and labour costs
-- Overspeed / brake / overload events
-- Accidents and tyre failures
+Power is supplied by:
+- 3.7V LiPo battery
+- 5V solar panel
 
-**Example Analytics**
-- Cost per tonne of ore delivered
-- Human vs autonomous truck performance
-- Event frequency by driver demographics
-- Productivity by mine and truck type
+Energy usage is minimized by:
+- Turning sensors on only during measurement
+- Powering WiFi only during data transmission
+- Putting the MCU into deep sleep between measurement cycles
 
----
+## Example Data Collected
+Typical measurements include:
 
-### 2. Stockpile & Supply Chain Data Cube
-Provides visibility into ore flow from mines to port.
+- Wind speed
+- Wind direction
+- Temperature
+- Humidity
+- Battery level
+- Ambient light level
+- WiFi signal strength
 
-**Key Dimensions**
-- Date
-- Stockpile
-- Location
-- Train
-- Deposit tier
+## Cost
+The prototype system was built for approximately **$140**, with the wind sensors representing the largest cost component.
 
-**Key Facts**
-- Stockpile loading levels
-- Ore flow rate
-- Train capacity and movement
-- In‑ground resource estimates
+## Possible Improvements
+Potential future improvements include:
 
-**Example Analytics**
-- Stockpile utilisation trends
-- Supply bottlenecks
-- Production capacity planning
+- Custom PCB for reduced power consumption
+- Cellular connectivity for wider deployment
+- Improved enclosure and mounting system
+- Real‑time alerts and dashboards
+- Predictive weather modelling using historical data
 
----
+## Authors
+- Nathan Scott  
+- Tracy Hong  
+- Guobei Zhang
 
-### 3. Order Pipeline Data Cube
-Tracks long‑term iron ore supply contracts and shipments.
-
-**Key Dimensions**
-- Customer
-- Country
-- Port
-- Transporter
-- Date
-
-**Key Facts**
-- Shipment quantity
-- Order quantity
-- Contract price
-
-**Example Analytics**
-- Demand forecast (month / year / decade)
-- Revenue by region
-- Customer profitability
-
----
-
-## Dimensional Modeling
-The warehouse follows **Kimball-style dimensional modeling** with:
-
-- **Fact tables** storing measurable business events
-- **Dimension tables** providing context for analysis
-- **Star schemas** optimized for OLAP queries
-
-Example fact table grain:
-
-Truck cube grain: **one truck mission (round trip)**
-
-## Data Generation
-Operational datasets were generated using **Python simulations** to mimic:
-
-- Truck telemetry and events
-- Stockpile levels and ore flows
-- Train movement
-- Long‑term supply contracts
-
-This allowed realistic warehouse datasets to be created without building full operational systems.
-
-## Technologies Used
-
-- SQL Server (data warehouse schema)
-- Python (data generation simulations)
-- OLAP cube design concepts
-- Dimensional modeling
-
-## Repository Contents
-
-| File | Description |
-|-----|-------------|
-| project_report.pdf | Full academic project report |
-| schema_diagrams/ | Star schema diagrams |
-| simulation_code/ | Python scripts used to generate data |
-| warehouse_schema.sql | SQL schema definitions |
-| README.md | Project overview |
-
-## Author
-
-Nathan Scott  
+## License
+This project was developed for academic purposes and is provided for educational and demonstration use.
